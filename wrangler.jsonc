@@ -1,0 +1,45 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "giftlist",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": { "enabled": true },
+
+  // The React dashboard is served as static assets. Requests to /api/* and
+  // /auth/* go to the Worker first; everything else falls back to index.html.
+  "assets": {
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*", "/auth/*"]
+  },
+
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "giftlist",
+      // Replace with the id printed by `wrangler d1 create giftlist`.
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "migrations"
+    }
+  ],
+
+  // Background inbox scan for every connected user.
+  "triggers": { "crons": ["*/30 * * * *"] },
+
+  "vars": {
+    // Public OAuth client id from Google Cloud Console.
+    "GOOGLE_CLIENT_ID": "",
+    // Optional comma-separated allowlist of Google accounts that may sign in.
+    // Leave empty to allow anyone with a Google account.
+    "ALLOWED_EMAILS": "",
+    // The cheap model that reads order emails.
+    "EXTRACTION_MODEL": "claude-haiku-5-5",
+    // Emails read per scan request, and users scanned per cron run. These
+    // defaults fit the Workers Free plan's limits (10 ms CPU, 50 queries and
+    // 50 outbound requests per request). On Workers Paid, try 20 and 10.
+    "SCAN_BATCH_SIZE": "2",
+    "CRON_USERS_PER_RUN": "1"
+  }
+  // Secrets (set with `wrangler secret put NAME`, or in .dev.vars locally):
+  //   GOOGLE_CLIENT_SECRET, ANTHROPIC_API_KEY, TOKEN_ENCRYPTION_KEY
+}

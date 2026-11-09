@@ -1,0 +1,8 @@
+# Copy to .dev.vars for local development. Never commit .dev.vars.
+GOOGLE_CLIENT_SECRET="your-google-oauth-client-secret"
+ANTHROPIC_API_KEY="sk-ant-..."
+# Any long random string, e.g. `openssl rand -base64 32`
+TOKEN_ENCRYPTION_KEY="change-me"
+# Local only: enables /auth/dev-login and demo data so you can try the UI
+# without Google credentials. Never set this in production.
+DEV_LOGIN="true"
